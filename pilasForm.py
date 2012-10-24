@@ -1,112 +1,66 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 import pilas
-# Permite que este ejemplo funcion incluso si no has instalado pilas.
-import sys
-
-pilas.iniciar()
-
-fondo = pilas.fondos.Fondo("fondo.jpg")
-fondo.escala = 0.7
-
-posicionV = 10
-posicionL = -170
-posicionR = 30
-lblEscala = 0.75
-escapar = 500
-# Boton
-boton = pilas.interfaz.Boton("Enviar")
-boton.x,boton.y = 100,-10
-
-def cuando_hacen_click():
-    lblNombre.x = [lblNombre.x,escapar]
-    txtNombre.x = [txtNombre.x,-escapar]
-    txtApellido.x = [txtApellido.x,escapar]
-    lblApellido.x = [lblApellido.x,-escapar]
-    lblSexo.x = [lblSexo.x,escapar]
-    opcionesSexo.y = [boton.y, -600]
-    opcionesSexo.rotacion=[0,-360]
-    lblEdad.x = [lblEdad.x,escapar]
-    lblEdadTotal.x = [lblEdadTotal.x,-escapar]
-    edad.x = [edad.x,-escapar]
-    boton.aprender(pilas.habilidades.PuedeExplotar)
-    boton.eliminar()
-    lblGracias = pilas.actores.Texto("MUCHAS GRACIAS!!!")
-    pilas.avisar(u'Se envió el formulario')
-
-boton.conectar(cuando_hacen_click)
 
 
-
-# Entrada de texto
-lblNombre = pilas.actores.Texto("Nombre:")
-lblNombre.escala = lblEscala
-lblNombre.x,lblNombre.y = posicionL,(posicionV *20)
-txtNombre = pilas.interfaz.IngresoDeTexto()
-txtNombre.texto = ""
-txtNombre.x,txtNombre.y = posicionR,(posicionV *20)
-
-lblApellido = pilas.actores.Texto("Apellido:")
-lblApellido.escala = lblEscala
-lblApellido.x,lblApellido.y = posicionL,(posicionV *15)
-txtApellido = pilas.interfaz.IngresoDeTexto()
-txtApellido.texto = ""
-txtApellido.x,txtApellido.y = posicionR,(posicionV *15)
-
-# Lista de selecciï¿½n
-def cuando_selecciona_sexo(opcion_seleccionada):
-    #pilas.avisar("Ha seleccionado la opcion: " + opcion_seleccionada)
-    return None
+pilas.iniciar(titulo='Formulario')
 
 
-lblSexo = pilas.actores.Texto("Sexo:")
-lblSexo.escala = lblEscala
-lblSexo.x,lblSexo.y = posicionL,(posicionV *10)
-opcionesSexo = pilas.interfaz.ListaSeleccion(['Varon', 'Mujer',''], cuando_selecciona_sexo)
-opcionesSexo.x,opcionesSexo.y = posicionR-100,(posicionV *10)
+class Formulario:
+    '''Genera un ejemplo de formulario hecho en pilas-engine'''
+
+    def __init__(self):
+        '''Es la funcion lider, que se ejecutara al ser llamada la clase "Formulario"'''
+        self.magnitud = 17  # es la variable que usaran los textos para definir su magnitud
+        self.fondo = pilas.fondos.Fondo('fondo.jpg')  # se elige un fondo
+        self.fondo.escala = 0.7  # cambiamos la escala
+        self.crear_formulario()
+        
+    def crear_formulario(self):
+        '''Se encarga de crear los elementos del formulario'''
+        self.lblNombre = pilas.actores.Texto(texto='Nombre:', magnitud=self.magnitud, x=-170, y=200)
+        self.txtbNombre = pilas.interfaz.IngresoDeTexto(x=30, y=200)
+        self.lblApellido = pilas.actores.Texto(texto='Apellido:', magnitud=self.magnitud, x=-170, y=150)
+        self.txtbApellido = pilas.interfaz.IngresoDeTexto(x=30, y=150)
+        self.lblSexo = pilas.actores.Texto(texto='Sexo:', magnitud=self.magnitud, x=-170, y=100)
+        
+        def selecciona_sexo(opcion): return None
+        
+        self.lstSexo = pilas.interfaz.ListaSeleccion(['Varon', 'Mujer',''], selecciona_sexo, x=-70, y=100)
+        self.lblEdad = pilas.actores.Texto(texto='Edad:', magnitud=self.magnitud, x=-170, y=50)
+        self.lblEdadTotal = pilas.actores.Texto(texto=u'0 años', magnitud=self.magnitud, x=(-160 + self.lblEdad.ancho), y=50)
+        self.dslEdad = pilas.interfaz.Deslizador(x=30, y=50)
+        
+        def cambia_edad(valor):
+            '''Genera un cambio de edad en base al deslizador'''
+            self.lblEdadTotal.definir_texto(str(int(valor * 100)) +u' años')
+             
+        self.dslEdad.conectar(cambia_edad)
+        self.boton = pilas.interfaz.Boton(texto='Enviar', x=100, y=-10)
+        
+        def pulsa():
+            '''Saca de la escena el formulario y da un mensaje de envio'''
+            self.lblNombre.x = [-500]
+            self.txtbNombre.x = [500]
+            self.lblApellido.x = [-500]
+            self.txtbApellido.x = [500]
+            self.lblSexo.x = [-500]
+            self.lstSexo.y = [-500]
+            self.lstSexo.rotacion = [-360]
+            self.lblEdad.x = [-500]
+            self.lblEdadTotal.x = [500]
+            self.dslEdad.x = [-500]
+            self.boton.aprender(pilas.habilidades.PuedeExplotar)
+            self.boton.eliminar()
+            self.lblGracias = pilas.actores.Texto('MUCHAS GRACIAS!!!')
+            pilas.avisar(u'Se envió el formulario')
+
+        self.boton.conectar(pulsa)
 
 
-lblEdad = pilas.actores.Texto("Edad:")
-lblEdad.escala = lblEscala
-lblEdad.x,lblEdad.y = posicionL,(posicionV * 5)
-lblEdadTotal = pilas.actores.Texto(u'0 años')
-lblEdadTotal.escala = lblEscala
-lblEdadTotal.x,lblEdadTotal.y = posicionL + 2 + lblEdad.ancho,(posicionV * 5)
 
-
-def cuando_cambia_edad(valor):
-	lblEdadTotal.definir_texto(str(int(valor * 100)) +u' años') 
-
-edad = pilas.interfaz.Deslizador()
-edad.conectar(cuando_cambia_edad)
-edad.x,edad.y = posicionR,posicionV*5
-
-# Selector
-'''
-sexoMasculino = pilas.interfaz.Selector("Masculino", x=-30, y=posicionV*10)
-sexoFemenino = pilas.interfaz.Selector("Femenino", x=100, y=posicionV*10)
-
-sexoFemenino.alternar_seleccion() = None
-sexoMasculino.alternar_seleccion() = None
-
-sexoMasculino.seleccionar()
-def selMasculino(estado):
-    if(estado):
-        sexoFemenino.deseleccionar()
-    else:
-        sexoFemenino.seleccionar()
-
-def selFemenino(estado):
-    if(estado):
-        sexoMasculino.deseleccionar()
-    else:
-        sexoMasculino.seleccionar()
-
-
-sexoFemenino.definir_accion(selFemenino(sexoFemenino.seleccionado))
-sexoMasculino.definir_accion(selMasculino(sexoMasculino.seleccionado))
-'''
-
+Formulario()
 
 pilas.ejecutar()
